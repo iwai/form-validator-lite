@@ -1,0 +1,13 @@
+{
+  "name": "iwai/form-validator-lite",
+  "type":"library",
+  "license":"MIT",
+  "authors":[
+    { "name":"Yuji Iwai", "email":"iwai.ug@gmail.com" }
+  ],
+  "autoload": {
+    "psr-0": {
+      "Iwai\\": [ "" ]
+    }
+  }
+}
