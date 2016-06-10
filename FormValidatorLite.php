@@ -39,7 +39,7 @@ class FormValidatorLite
                     }
                 }
 
-                if ($options['require']) {
+                if (!isset($options['require']) || $options['require'] == true) {
                     list($valid, $message) = \Iwai\FormValidatorLite\Validator::DataRequire($name, $data, $options);
 
                     if (!$valid) {
