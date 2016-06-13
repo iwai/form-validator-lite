@@ -6,9 +6,8 @@
     { "name":"Yuji Iwai", "email":"iwai.ug@gmail.com" }
   ],
   "autoload": {
-    "psr-0": {
+    "psr-4": {
       "Iwai\\": [ "" ]
-    },
-    "target-dir": "Iwai"
+    }
   }
 }
