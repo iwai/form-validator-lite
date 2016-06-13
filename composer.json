@@ -8,6 +8,7 @@
   "autoload": {
     "psr-0": {
       "Iwai\\": [ "" ]
-    }
+    },
+    "target-dir": "Iwai"
   }
 }
