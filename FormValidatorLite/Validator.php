@@ -66,6 +66,47 @@ class Validator
 
     /**
      *
+     * message: "数字のみで入力してください"
+     *
+     * @param $name
+     * @param $params
+     * @param $options
+     * @return array
+     */
+    static public function Numericality($name, $params, $options)
+    {
+        $data = $params[$name];
+
+        if (!is_numeric($data)) {
+            return array(false, $options['message']);
+        }
+
+        return array(true, null);
+    }
+
+    /**
+     *
+     * pattern: '/^[0-9]+$/'
+     * message: "数字のみで入力してください"
+     *
+     * @param $name
+     * @param $params
+     * @param $options
+     * @return array
+     */
+    static public function Regex($name, $params, $options)
+    {
+        $data = $params[$name];
+
+        if (preg_match($options['pattern'], $data) !== 1) {
+            return array(false, $options['message']);
+        }
+
+        return array(true, null);
+    }
+
+    /**
+     *
      * values: [ 1,2,3,4,5 ]
      * multiple: false
      * message: "お問い合わせ種別を選択してください"
@@ -178,6 +219,29 @@ class Validator
         if (!filter_var($data, FILTER_VALIDATE_URL)) {
             return array(false, $options['message']);
         }
+        return array(true, null);
+    }
+
+    /**
+     * @param $name
+     * @param $params
+     * @param $options
+     * @return array
+     */
+    static public function PhoneNumber($name, $params, $options)
+    {
+        $data = $params[$name];
+
+        if (isset($options['require']) && !$options['require']) {
+            if ($data == null || $data == '') {
+                return array(true, null);
+            }
+        }
+
+        if (preg_match('/^[0-9]{2,4}-[0-9]{2,4}-[0-9]{2,4}$/') !== 1) {
+            return array(false, $options['message']);
+        }
+
         return array(true, null);
     }
 }
