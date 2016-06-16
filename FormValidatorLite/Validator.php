@@ -52,13 +52,25 @@ class Validator
         $data = $params[$name];
 
         if (isset($options['min'])) {
-            if (mb_strlen($data) < $options['min']) {
-                return array(false, $options['messageMinimum']);
+            if (function_exists('mb_strlen')) {
+                if (mb_strlen($data) < $options['min']) {
+                    return array(false, $options['messageMinimum']);
+                }
+            } else {
+                if (strlen($data) < $options['min']) {
+                    return array(false, $options['messageMinimum']);
+                }
             }
         }
         if (isset($options['max'])) {
-            if (mb_strlen($data) > $options['max']) {
-                return array(false, $options['messageMaximum']);
+            if (function_exists('mb_strlen')) {
+                if (mb_strlen($data) > $options['max']) {
+                    return array(false, $options['messageMaximum']);
+                }
+            } else {
+                if (strlen($data) > $options['max']) {
+                    return array(false, $options['messageMaximum']);
+                }
             }
         }
         return array(true, null);
@@ -131,7 +143,7 @@ class Validator
                 return array(false, $options['message']);
             }
         } else {
-            $data = is_array($data) ? $data : [ $data ];
+            $data = is_array($data) ? $data : array($data);
         }
 
         foreach ($data as $value) {
@@ -192,9 +204,14 @@ class Validator
                 return array(true, null);
             }
         }
-
+        $pattern =
+            '/^(?:(?:(?:(?:[a-zA-Z0-9_!#\$\%&\'*+\\/=?\^`{}~|\-]+)(?:\.(?:[a-zA-Z0-9_!'.
+            '#\$\%&\'*+\\/=?\^`{}~|\-]+))*)|(?:"(?:\\[^\r\n]|[^\\"])*")))\@(?:(?:(?:(?:'.
+            '[a-zA-Z0-9_!#\$\%&\'*+\\/=?\^`{}~|\-]+)(?:\.(?:[a-zA-Z0-9_!#\$\%&\'*+\\/=?\^`'.
+            "{}~|\-]+))*)|(?:\[(?:\\\S|[\x21-\x5a\x5e-\x7e])*\])))$/"
+        ;
         // @see http://blog.livedoor.jp/dankogai/archives/51189905.html
-        if (1 !== preg_match('/^(?:(?:(?:(?:[a-zA-Z0-9_!#\$\%&\'*+/=?\^`{}~|\-]+)(?:\.(?:[a-zA-Z0-9_!#\$\%&\'*+/=?\^`{}~|\-]+))*)|(?:"(?:\\[^\r\n]|[^\\"])*")))\@(?:(?:(?:(?:[a-zA-Z0-9_!#\$\%&\'*+/=?\^`{}~|\-]+)(?:\.(?:[a-zA-Z0-9_!#\$\%&\'*+/=?\^`{}~|\-]+))*)|(?:\[(?:\\\S|[\x21-\x5a\x5e-\x7e])*\])))$/', $data)) {
+        if (1 !== preg_match($pattern, $data)) {
             return array(false, $options['message']);
         }
         return array(true, null);
@@ -238,7 +255,7 @@ class Validator
             }
         }
 
-        if (preg_match('/^[0-9]{2,4}-[0-9]{2,4}-[0-9]{2,4}$/') !== 1) {
+        if (preg_match('/^[0-9]{2,4}-[0-9]{2,4}-[0-9]{2,4}$/', $data) !== 1) {
             return array(false, $options['message']);
         }
 

@@ -9,6 +9,8 @@
 
 namespace Iwai;
 
+use Iwai\FormValidatorLite\Validator;
+
 class FormValidatorLite
 {
     protected $rules = array();
@@ -29,12 +31,12 @@ class FormValidatorLite
             foreach ($rule as $condition) {
                 list($validator, $options) = each($condition);
 
-                $validator_func = '\Iwai\FormValidatorLite\Validator::' . $validator;
+                $namespace = '\Iwai\FormValidatorLite\Validator';
 
-                if (!function_exists($validator_func)) {
-                    if (function_exists($validator)) {
-                        $validator_func = $validator;
-                    } else {
+                if (!method_exists($namespace, $validator)) {
+                    list ($namespace, $validator) = explode('::', $validator);
+
+                    if (!method_exists($namespace, $validator)) {
                         throw new \RuntimeException(sprintf('Not found function %s', $validator));
                     }
                 }
@@ -48,7 +50,10 @@ class FormValidatorLite
                     }
                 }
 
-                list($valid, $message) = $validator_func($name, $data, $options);
+                list($valid, $message) = call_user_func_array(
+                    array($namespace, $validator),
+                    array($name, $data, $options)
+                );
 
                 if (!$valid) {
                     $this->messages[ $name ] = $message;
@@ -57,7 +62,7 @@ class FormValidatorLite
             }
         }
 
-        return count($this->messages) > 0;
+        return count($this->messages) === 0;
     }
 
     /**
